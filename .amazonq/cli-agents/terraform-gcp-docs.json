@@ -1,0 +1,45 @@
+{
+  "name": "terraform-gcp-docs",
+  "description": "An agent to document Terraform code for GCP resources by parsing files and querying MCP servers.",
+  "mcpServers": {
+    "terraform": {
+      "command": "terraform",
+      "args": ["mcp-server"],
+      "timeout": 30000
+    },
+    "spacectl": {
+      "command": "spacectl",
+      "args": ["mcp", "server"],
+      "timeout": 30000
+    },
+    "github": {
+      "command": "github-mcp-server",
+      "args": [],
+      "timeout": 30000
+    }
+  },
+  "tools": [
+    "execute_bash",
+    "fs_read",
+    "fs_write",
+    "@terraform/getResource",
+    "@spacectl/getModule",
+    "@github/getResource"
+  ],
+  "allowedTools": [
+    "execute_bash",
+    "fs_read",
+    "fs_write",
+    "@terraform/getResource",
+    "@spacectl/getModule",
+    "@github/getResource"
+  ],
+  "hooks": {
+    "agentSpawn": [
+      {
+        "command": "echo 'Terraform GCP Documentation Agent initialized. Ready to parse and document your code.'",
+        "timeout_ms": 5000
+      }
+    ]
+  }
+}
