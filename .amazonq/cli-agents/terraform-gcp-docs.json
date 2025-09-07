@@ -1,7 +1,25 @@
 {
   "name": "terraform-gcp-docs",
   "description": "An agent to document Terraform code for GCP resources by parsing files and querying MCP servers.",
-  "mcpServers": {
+    "prompts": [
+    {
+      "name": "create-terraform-index",
+      "description": "Parses Terraform files, uses MCP servers to get context, and creates a local index.",
+      "instructions": [
+        "You are a Terraform parsing agent. Your goal is to create a detailed index of all resources and modules in the current project.",
+        "1. First, create a directory for the index files at './.q-docs-agent/index/'. Inform the user you are doing this.",
+        "2. Scan all '*.tf' files in the current directory.",
+        "3. For each 'resource' block you find, use the '@terraform/getResource' tool to get its full context. The resource type and name from the file should be the input for the tool.",
+        "4. For each 'module' block you find, check its source.",
+        "   - If the source is from 'spacelift.io', use the '@spacectl/getModule' tool.",
+        "   - If the source is from 'github.com', use the '@github/getResource' tool.",
+        "5. After getting the context for a resource or module, use the 'fs_write' tool to save the JSON output to a file named after the resource/module in the './.q-docs-agent/index/' directory (e.g., 'my_gcs_bucket.json').",
+        "6. Scan for any '*.tfvars' files and use the 'fs_read' tool to read their content. Save a copy of the content to './.q-docs-agent/index/input_variables.tfvars' using 'fs_write'.",
+        "7. When you have processed all files, inform the user that the indexing is complete and they can now run the documentation generator."
+      ]
+    }
+  ],
+  "mcpServers": { 
     "terraform": {
       "command": "terraform",
       "args": ["mcp-server"],
@@ -17,8 +35,7 @@
       "args": [],
       "timeout": 30000
     }
-  },
-  "tools": [
+  },"tools": [
     "execute_bash",
     "fs_read",
     "fs_write",
@@ -37,7 +54,7 @@
   "hooks": {
     "agentSpawn": [
       {
-        "command": "echo 'Terraform GCP Documentation Agent initialized. Ready to parse and document your code.'",
+        "command": "echo 'Terraform GCP Documentation Agent initialized. You can use the `create-terraform-index` prompt to start.'",
         "timeout_ms": 5000
       }
     ]
